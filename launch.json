@@ -1,0 +1,15 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "type": "node",
+        "request": "launch",
+        "name": "Debug Express Server",
+        "program": "${Node}/index.js",
+        "cwd": "${Node}",
+        "env": { "${process.env}" : "development" },
+        "console": "integratedTerminal"
+      }
+    ]
+  }
+  
