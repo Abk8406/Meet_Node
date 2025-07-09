@@ -41,6 +41,7 @@ app.get("/", (req, res) => {
   res.send("Server is running!");
 });
 
+
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);

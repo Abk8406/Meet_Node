@@ -33,6 +33,6 @@ const User = sequelize.define("users", {
 
 // Define Associations
 User.belongsTo(Role, { foreignKey: "role_id", as: "role" });
-Role.hasMany(User, { foreignKey: "role_id" });
+Role.hasMany(User, { foreignKey: "role_id", as: "users" });
 
 module.exports = User;

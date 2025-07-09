@@ -44,8 +44,10 @@ router.post("/login", async (req, res) => {
         const user = await User.findOne({
             where: { email },
             include: [{ model: Role, as: "role", attributes: ["id", "role_name"] }],
-        });
-
+            raw: false,
+            nest: true
+          });
+      
         if (!user) {
             return res.status(400).json({ message: "Invalid email or password" });
         }
@@ -61,8 +63,8 @@ router.post("/login", async (req, res) => {
                 id: user.id,
                 email: user.email,
                 name: user.name,
-                role_id: user.role.id,
-                role_name: user.role.role_name,
+                role_id: user.role_id,
+                role_name: user.role ? user.role.role_name : null,
             },
             process.env.JWT_SECRET,
             { expiresIn: "1m" }
@@ -81,8 +83,8 @@ router.post("/login", async (req, res) => {
                 email: user.email,
                 name: user.name,
                 created_at: user.created_at,
-                role_id: user.role.id,
-                role_name: user.role.role_name,
+                role_id: user.role_id,
+                role_name: user.role ? user.role.role_name : null,
             },
         });
     } catch (error) {
@@ -228,11 +230,11 @@ router.post("/register", async (req, res) => {
     try {
         console.log("➡️ Register API hit");
 
-        const { name, email, password, role_id, otp } = req.body;
+        const { name, email, password, role_name, otp } = req.body;
         console.log("📥 Request Body:", req.body);
 
         // Validate required fields
-        if (!name || !email || !password || !role_id || !otp) {
+        if (!name || !email || !password || !role_name || !otp) {
             return res.status(400).json({ message: "All fields including OTP are required!" });
         }
         console.log("🔍 Validating OTP...",storeOTP);
@@ -254,12 +256,20 @@ router.post("/register", async (req, res) => {
         // Hash password
         const hashedPassword = await bcrypt.hash(password, 10);
 
+        // Find the role by name
+        const role = await Role.findOne({ where: { role_name } });
+        if (!role) {
+            return res.status(400).json({ message: "Role not found!" });
+        }
+        const role_id = role.id;
+
         // Create new user
         const newUser = await User.create({
             name,
             email,
             password: hashedPassword,
             role_id,
+            role_name,
         });
 
         console.log("✅ User registered successfully:", newUser);
