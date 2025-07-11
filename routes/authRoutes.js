@@ -234,7 +234,7 @@ router.post("/register", async (req, res) => {
         console.log("📥 Request Body:", req.body);
 
         // Validate required fields
-        if (!name || !email || !password || !role_name || !otp) {
+        if (!name || !email || !password  || !otp) {
             return res.status(400).json({ message: "All fields including OTP are required!" });
         }
         console.log("🔍 Validating OTP...",storeOTP);
